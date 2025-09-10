@@ -51,7 +51,7 @@ try {
     const result = await response.json();
     alert(result.message);
 } catch (error) {
-    alert("Erro ao conectar com o servidor.");
+    alert("Credenciais inválidas");
     console.error(error);
 }
 });

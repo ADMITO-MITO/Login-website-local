@@ -1,8 +1,8 @@
 const emailInput = document.getElementById('email');
 const passwordInput = document.getElementById('password');
 const loginBtn = document.getElementById('loginBtn');
+const comfirmPassword = document.getElementById('confirm_password')
 
-// Função para ativar/desativar o botão
 function checkInputs() {
 const emailValue = emailInput.value.trim();
 const passwordValue = passwordInput.value.trim();
@@ -13,20 +13,35 @@ if (emailValue !== '' && passwordValue !== '') {
     loginBtn.classList.remove('active');
 }
 }
+function checkPass(){
+    const passwordValue = passwordInput.value.trim();
+    const comfirmValue = comfirmPassword.value.trim();
+
+    if(comfirmValue !== passwordValue){
+        alert("Senha não coferem")
+        return false
+    }else{
+        return true
+    }
+
+}
 
 emailInput.addEventListener('input', checkInputs);
 passwordInput.addEventListener('input', checkInputs);
 
-// Validação de email
 function validarEmail(email) {
 const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 return regex.test(email);
 }
 
-// Clique no botão de login
 loginBtn.addEventListener('click', async function() {
 if (!this.classList.contains('active')) {
     alert("Preencha todos os campos!");
+    return;
+}
+
+
+if (!checkPass()) { 
     return;
 }
 

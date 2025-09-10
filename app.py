@@ -10,7 +10,7 @@ from Models.login_manager import login_manager
 
 @app.route('/login', methods=["GET"])
 def Login():
-    return render_template("index.html")
+    return render_template("login.html")
 
 if __name__ == "__main__":
     with app.app_context():

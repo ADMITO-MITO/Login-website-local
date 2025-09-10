@@ -3,34 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registro de usuario</title>
+    <title>Registro de usuário</title>
     <link rel="stylesheet" href="/static/register_style.css">
+    <link rel="shortcut icon" href="/static/image/favicon.png" type="image/x-icon">
 </head>
 <body>
     <main>
-    
         <div class="register">
-        <h1> Crie sua <span>Conta!</span></h1>
-        <div class="register-box">
-          <label for="email">Email</label>
-          <input type="email" id="email" placeholder="Digite seu email" required>
-    
-          <label for="password">Senha</label>
-          <input type="password" id="password" placeholder="Crie uma senha" required>
-          <label for="password">Comfirme sua senha</label>
-          <input type="password" id="confirm_password" placeholder="Digite sua senha novamente" required>
-    
-          <button class="btn" id="loginBtn">Entrar</button>
-    
-          <div class="sigin">
-            <a href="login" class="link">Já tenho uma conta</a>
-          </div>
+            <h1>Crie sua <span>Conta!</span></h1>
+            <div class="register-box">
+                <label for="email">Email</label>
+                <input type="email" id="email" placeholder="Digite seu email" required>
+
+                <label for="password">Senha</label>
+                <input type="password" id="password" placeholder="Crie uma senha" required>
+                
+                <label for="confirm_password">Confirme sua senha</label>
+                <input type="password" id="confirm_password" placeholder="Digite sua senha novamente" required>
+
+                <button class="btn" id="loginBtn">Registrar</button>
+
+                <div class="signin">
+                    <a href="/login" class="link">Já tenho uma conta</a>
+                </div>
+            </div>
+            <div class="footer">
+                2025 | Desenvolvido por <a class="link" href="https://github.com/ADMITO-MITO">Paulo Victor Pinheiro</a>
+            </div>
         </div>
-        <div class="footer">
-          2025 | Desenvolvido por <a class="link" href="https://github.com/ADMITO-MITO">Paulo victor Pinheiro</a>
-        </div>
-      </div>
-</main>
- <script src="/static/scrip.js"></script>
+    </main>
+    <script src="/static/scrip.js"></script>
 </body>
 </html>

@@ -3,7 +3,7 @@ from flask_login import login_required, login_user, current_user, logout_user
 import bcrypt
 
 app = Flask(__name__)
-app.config["SECRET_KEY"] = "YOUR_SECRET_KEY" 
+app.config["SECRET_KEY"] = "YOUR_SECRET_KEY"
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///database.db"
 
 from Models.database import db
@@ -20,46 +20,70 @@ def load_user(user_id):
 
 @app.route("/")
 def index():
-    return redirect(url_for("view_login"))
+    return redirect(url_for("login_page"))
 
-@app.route('/login', methods=["GET", "POST"])
-def view_login():
-    if request.method == "GET":
-        return render_template('login.html')
-    elif request.method == "POST":
-        return login_user_endpoint()
+@app.route('/login', methods=["GET"])
+def login_page():
+    return render_template('login.html')
 
-def login_user_endpoint():
+@app.route('/api/login', methods=["POST"])
+def login_api():
     from Models.Client.user import User
-    
+
+
+    if not request.is_json:
+        return jsonify({"message": "Content-Type deve ser application/json"}), 400
+
     data = request.get_json()
     email = data.get("email")
     password = data.get("password")
-    
+
     if not email or not password:
         return jsonify({"message": "Email e password são obrigatórios"}), 400
 
     try:
+
         user = User.query.filter_by(email=email).first()
-        if user and bcrypt.checkpw(str.encode(password), str.encode(user.password)):
+        print(f"DEBUG: Usuário encontrado: {user}")
+
+        if not user:
+            return jsonify({"message": "Credenciais inválidas"}), 400
+
+        print(f"DEBUG: Senha do banco: {user.password}")
+        print(f"DEBUG: Tipo da senha do banco: {type(user.password)}")
+
+        if isinstance(user.password, bytes):
+            stored_password = user.password
+        else:
+            stored_password = user.password.encode('utf-8')
+
+        password_bytes = password.encode('utf-8')
+
+        print(f"DEBUG: Verificando senha...")
+
+        if bcrypt.checkpw(password_bytes, stored_password):
             login_user(user)
-            return jsonify({"message": "Autenticação realizada com sucesso"}) 
-        
-        return jsonify({"message": "Credenciais inválidas"}), 400
+            print(f"DEBUG: Login bem-sucedido para {email}")
+            return jsonify({"message": "Autenticação realizada com sucesso"})
+        else:
+            print(f"DEBUG: Senha incorreta para {email}")
+            return jsonify({"message": "Credenciais inválidas"}), 400
 
     except Exception as e:
-        return jsonify({"message": "Erro interno do servidor"}), 500
+        print(f"ERRO no login: {str(e)}")
+        print(f"Tipo do erro: {type(e)}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({"message": f"Erro interno do servidor: {str(e)}"}), 500
 
-@app.route('/register', methods=["GET", "POST"])
-def view_register():
-    if request.method == "GET":
-        return render_template('register.html')
-    elif request.method == "POST":
-        return register_user_endpoint()
+@app.route('/register', methods=["GET"])
+def register_page():
+    return render_template('register.html')
 
-def register_user_endpoint():
+@app.route('/api/register', methods=["POST"])
+def register_api():
     from Models.Client.user import User
-    
+
     if not request.is_json:
         return jsonify({"message": "Content-Type deve ser application/json"}), 400
 
@@ -78,27 +102,42 @@ def register_user_endpoint():
         if existing_user:
             return jsonify({"message": "Usuário já existe"}), 400
 
-        hashed_password = bcrypt.hashpw(str.encode(password), bcrypt.gensalt())
+        password_bytes = password.encode('utf-8')
+        salt = bcrypt.gensalt()
+        hashed_password = bcrypt.hashpw(password_bytes, salt)
+
+        print(f"DEBUG REGISTRO: Senha original: {password}")
+        print(f"DEBUG REGISTRO: Hash gerado: {hashed_password}")
+        print(f"DEBUG REGISTRO: Tipo do hash: {type(hashed_password)}")
+
         new_user = User(email=email, password=hashed_password)
         db.session.add(new_user)
         db.session.commit()
+
+        print(f"DEBUG REGISTRO: Usuário {email} criado com sucesso")
 
         return jsonify({"message": "Usuário cadastrado com sucesso"}), 201
 
     except Exception as e:
         db.session.rollback()
-        return jsonify({"message": "Erro ao cadastrar usuário"}), 500
+        print(f"ERRO no registro: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({"message": f"Erro ao cadastrar usuário: {str(e)}"}), 500
 
 @app.route('/dashboard')
 @login_required
 def dashboard():
-    return jsonify({"message": f"Bem-vindo, {current_user.email}!"})
+    return jsonify({
+        "message": f"Bem-vindo, {current_user.email}!",
+        "user": current_user.to_dict()
+    })
 
 @app.route('/logout')
 @login_required
 def logout():
     logout_user()
-    return redirect(url_for('view_login'))
+    return redirect(url_for('login_page'))
 
 if __name__ == "__main__":
     with app.app_context():

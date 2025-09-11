@@ -3,8 +3,8 @@ const passwordInput = document.getElementById('password');
 const loginBtn = document.getElementById('loginBtn');
 const confirmPassword = document.getElementById('confirm_password');
 
-const LOGIN_URL = "/login";
-const REGISTER_URL = "/register";
+const LOGIN_URL = "/api/login";
+const REGISTER_URL = "/api/register";
 
 // Determinar se estamos na página de login ou registro
 const isRegisterPage = window.location.pathname.includes('register');
@@ -20,7 +20,7 @@ function showAlert(message, type) {
     const alertDiv = document.createElement('div');
     alertDiv.className = `alert alert-${type}`;
     alertDiv.textContent = message;
-    
+
     // Adiciona estilos básicos
     alertDiv.style.cssText = `
         position: fixed;
@@ -33,9 +33,9 @@ function showAlert(message, type) {
         z-index: 1000;
         ${type === 'success' ? 'background-color: #4CAF50;' : 'background-color: #f44336;'}
     `;
-    
+
     document.body.appendChild(alertDiv);
-    
+
     // Remove o alerta após 5 segundos
     setTimeout(() => {
         if (alertDiv.parentNode) {
@@ -66,7 +66,7 @@ function checkPasswords() {
     if (!isRegisterPage || !confirmPassword) {
         return true;
     }
-    
+
     const passwordValue = passwordInput.value.trim();
     const confirmValue = confirmPassword.value.trim();
 
@@ -115,17 +115,17 @@ loginBtn.addEventListener('click', async function() {
         const url = isRegisterPage ? REGISTER_URL : LOGIN_URL;
         const response = await fetch(url, {
             method: "POST",
-            headers: { 
+            headers: {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify(data)
         });
-        
+
         const result = await response.json();
-        
+
         if (response.ok) {
             showAlert(result.message || (isRegisterPage ? "Conta criada com sucesso!" : "Login realizado com sucesso!"), "success");
-            
+
             // Redirecionar após sucesso
             if (isRegisterPage) {
                 // Após registro bem-sucedido, redirecionar para login

@@ -6,12 +6,11 @@ const confirmPassword = document.getElementById('confirm_password');
 const LOGIN_URL = "/api/login";
 const REGISTER_URL = "/api/register";
 
-// Determinar se estamos na página de login ou registro
 const isRegisterPage = window.location.pathname.includes('register');
 
 // Função para mostrar alertas
 function showAlert(message, type) {
-    // Remove alertas anteriores
+
     const existingAlert = document.querySelector('.alert');
     if (existingAlert) {
         existingAlert.remove();
@@ -36,7 +35,6 @@ function showAlert(message, type) {
 
     document.body.appendChild(alertDiv);
 
-    // Remove o alerta após 5 segundos
     setTimeout(() => {
         if (alertDiv.parentNode) {
             alertDiv.parentNode.removeChild(alertDiv);
@@ -82,7 +80,6 @@ function validarEmail(email) {
     return regex.test(email);
 }
 
-// Event listeners
 emailInput.addEventListener('input', checkInputs);
 passwordInput.addEventListener('input', checkInputs);
 if (confirmPassword) {
@@ -103,12 +100,10 @@ loginBtn.addEventListener('click', async function() {
         return;
     }
 
-    // Para registro, verificar se as senhas coincidem
     if (isRegisterPage && !checkPasswords()) {
         return;
     }
 
-    // Monta o JSON
     const data = { email, password };
 
     try {
@@ -126,14 +121,14 @@ loginBtn.addEventListener('click', async function() {
         if (response.ok) {
             showAlert(result.message || (isRegisterPage ? "Conta criada com sucesso!" : "Login realizado com sucesso!"), "success");
 
-            // Redirecionar após sucesso
+
             if (isRegisterPage) {
-                // Após registro bem-sucedido, redirecionar para login
+
                 setTimeout(() => {
-                    window.location.href = '/login';
+
                 }, 2000);
             } else {
-                // Após login bem-sucedido, redirecionar para dashboard
+
                 setTimeout(() => {
                     window.location.href = '/dashboard';
                 }, 1500);
@@ -147,5 +142,4 @@ loginBtn.addEventListener('click', async function() {
     }
 });
 
-// Inicializar verificação de inputs
 checkInputs();

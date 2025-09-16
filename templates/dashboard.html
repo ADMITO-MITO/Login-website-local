@@ -1,11 +1,156 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Dashboard - Sistema de Usuários</title>
+    <link rel="stylesheet" href="/static/dashboard.css">
+    <link rel="shortcut icon" href="/static/image/favicon.png" type="image/x-icon">
 </head>
 <body>
-    hello world
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <h1>Dashboard</h1>
+            <div class="user-info">
+                <span>Olá, <span id="user-email">{{ user.email }}</span>!</span>
+                <a href="/logout" class="logout-btn">Sair</a>
+            </div>
+        </div>
+    </header>
+
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Alertas -->
+        <div id="alert-container"></div>
+
+        <div class="dashboard-grid">
+            <!-- Card de Informações do Usuário -->
+            <div class="card main-card">
+                <h2>Informações da <span>Conta</span></h2>
+
+                <!-- Modo Visualização -->
+                <div id="view-mode" class="card-content">
+                    <div class="info-group">
+                        <label>Email:</label>
+                        <span id="display-email">{{ user.email }}</span>
+                    </div>
+                    <div class="info-group">
+                        <label>ID do Usuário:</label>
+                        <span>{{ user.id }}</span>
+                    </div>
+                    <div class="info-group">
+                        <label>Status da Conta:</label>
+                        <span class="status-active">Ativa</span>
+                    </div>
+
+                    <div class="button-group">
+                        <button id="edit-btn" class="btn btn-primary">Editar Perfil</button>
+                        <button id="delete-btn" class="btn btn-danger">Deletar Conta</button>
+                    </div>
+                </div>
+
+                <!-- Modo Edição -->
+                <div id="edit-mode" class="card-content hidden">
+                    <form id="update-form">
+                        <div class="form-group">
+                            <label for="new-email">Novo Email:</label>
+                            <input type="email" id="new-email" value="{{ user.email }}" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="current-password">Senha Atual:</label>
+                            <input type="password" id="current-password" placeholder="Digite sua senha atual">
+                            <small>Obrigatório para alterar senha</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="new-password">Nova Senha:</label>
+                            <input type="password" id="new-password" placeholder="Deixe vazio para manter a atual">
+                        </div>
+
+                        <div class="button-group">
+                            <button type="submit" class="btn btn-success">Salvar</button>
+                            <button type="button" id="cancel-edit-btn" class="btn btn-secondary">Cancelar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Card de Ações Rápidas -->
+            <div class="card side-card">
+                <h3>Ações <span>Rápidas</span></h3>
+                <div class="actions-list">
+                    <button id="refresh-info-btn" class="action-btn">
+                        <span class="action-icon">🔄</span>
+                        Atualizar Informações
+                    </button>
+                    <button id="change-password-btn" class="action-btn">
+                        <span class="action-icon">🔑</span>
+                        Alterar Senha
+                    </button>
+                    <button id="download-data-btn" class="action-btn">
+                        <span class="action-icon">💾</span>
+                        Baixar Dados
+                    </button>
+                </div>
+            </div>
+
+            <!-- Card de Estatísticas -->
+            <div class="card side-card">
+                <h3>Esta<span>tísticas</span></h3>
+                <div class="stats-list">
+                    <div class="stat-item">
+                        <span class="stat-label">Último Login:</span>
+                        <span class="stat-value" id="last-login">Agora</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Conta criada:</span>
+                        <span class="stat-value">{{ user.created_at or 'Não informado' }}</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Última atualização:</span>
+                        <span class="stat-value">{{ user.updated_at or 'Nunca' }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal de Confirmação para Deletar -->
+    <div id="delete-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Deletar <span>Conta</span></h3>
+                <div class="warning-icon">⚠️</div>
+            </div>
+            <div class="modal-body">
+                <p>Tem certeza que deseja deletar sua conta?</p>
+                <p class="warning-text">Esta ação não pode ser desfeita!</p>
+
+                <form id="delete-form">
+                    <div class="form-group">
+                        <label for="delete-password">Digite sua senha para confirmar:</label>
+                        <input type="password" id="delete-password" placeholder="Sua senha" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button id="confirm-delete-btn" class="btn btn-danger">Deletar Conta</button>
+                <button id="cancel-delete-btn" class="btn btn-secondary">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Image Container -->
+    <div class="image-container"></div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        2025 | Desenvolvido por <a href="https://github.com/ADMITO-MITO">Paulo Victor Pinheiro</a>
+    </footer>
+
+    <script src="/static/dashboard.js"></script>
 </body>
 </html>

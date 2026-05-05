@@ -1,10 +1,13 @@
 from flask import Flask, request, jsonify, render_template, redirect, url_for
 from flask_login import login_required, login_user, current_user, logout_user
 import bcrypt
+import os
+from dotenv import load_dotenv
+load_dotenv()
 
 app = Flask(__name__)
-app.config["SECRET_KEY"] = "YOUR_SECRET_KEY"
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///database.db"
+app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
+app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("SQLALCHEMY_DATABASE_URI")
 
 from Models.database import db
 from Models.login_manager import login_manager
@@ -42,13 +45,10 @@ def login_api():
 
     try:
         user = User.query.filter_by(email=email).first()
-        print(f"DEBUG: Usuário encontrado: {user}")
 
         if not user:
             return jsonify({"message": "Credenciais inválidas"}), 400
 
-        print(f"DEBUG: Senha do banco: {user.password}")
-        print(f"DEBUG: Tipo da senha do banco: {type(user.password)}")
 
         if isinstance(user.password, bytes):
             stored_password = user.password
@@ -57,14 +57,11 @@ def login_api():
 
         password_bytes = password.encode('utf-8')
 
-        print(f"DEBUG: Verificando senha...")
 
         if bcrypt.checkpw(password_bytes, stored_password):
             login_user(user)
-            print(f"DEBUG: Login bem-sucedido para {email}")
             return jsonify({"message": "Autenticação realizada com sucesso"})
         else:
-            print(f"DEBUG: Senha incorreta para {email}")
             return jsonify({"message": "Credenciais inválidas"}), 400
 
     except Exception as e:
@@ -104,15 +101,10 @@ def register_api():
         salt = bcrypt.gensalt()
         hashed_password = bcrypt.hashpw(password_bytes, salt)
 
-        print(f"DEBUG REGISTRO: Senha original: {password}")
-        print(f"DEBUG REGISTRO: Hash gerado: {hashed_password}")
-        print(f"DEBUG REGISTRO: Tipo do hash: {type(hashed_password)}")
-
         new_user = User(email=email, password=hashed_password)
         db.session.add(new_user)
         db.session.commit()
 
-        print(f"DEBUG REGISTRO: Usuário {email} criado com sucesso")
 
         return jsonify({"message": "Usuário cadastrado com sucesso"}), 201
 
@@ -176,8 +168,6 @@ def update_user():
             hashed_new_password = bcrypt.hashpw(new_password_bytes, salt)
             user.password = hashed_new_password
 
-            print(f"DEBUG UPDATE: Nova senha definida para {user.email}")
-
         # Atualizar email se fornecido
         if email and email != user.email:
             # Verificar se o novo email já existe
@@ -186,7 +176,6 @@ def update_user():
                 return jsonify({"message": "Email já está em uso"}), 400
 
             user.email = email
-            print(f"DEBUG UPDATE: Email atualizado para {email}")
 
         db.session.commit()
 
@@ -238,7 +227,6 @@ def delete_user():
         db.session.delete(user)
         db.session.commit()
 
-        print(f"DEBUG DELETE: Usuário {user.email} deletado com sucesso")
 
         return jsonify({"message": "Conta deletada com sucesso"})
 
